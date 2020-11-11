@@ -265,19 +265,19 @@ def objective_func(x):
     args.insert(0, baseDir+"/preprocess")
     subprocess.call(cmd, cwd=baseDir)
 
-    # Deform the car geometry based on this function's arguments
+    # Deform the geometry based on this function's arguments
     args=[str(el) for el in x]
     cmd=args
     args.insert(0, baseDir+"/setBCs")
     subprocess.call(cmd, cwd=baseDir)
 
-    # Run an OpenFOAM simulation to compute the flow around the car
+    # Run an OpenFOAM simulation to compute the flow around the cylinder
     args=[str(el) for el in x]
     cmd=args
     args.insert(0, baseDir+"/simCFD")
     subprocess.call(cmd, cwd=baseDir)
 
-    # Collect the drag integral and pass it to this function
+    # Collect the output and pass it to this function
     args=[str(el) for el in x]
     cmd=args
     args.insert(0, baseDir+"/postprocess")
