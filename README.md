@@ -17,6 +17,7 @@ the turbulent kinetic energy at a point in the cylinder's wake (coordinates x=2,
 
 ```
 
+
 **Input Values**
 ---
 
@@ -33,6 +34,15 @@ While running this Interface_function , It ask for user to input 4 values . Thos
   userId = input("Enter your USER ID to run the BOA experiment : ")
   password = input("Enter password to run the BOA experiment : ")
   baseDir = input("Enter Directory that holds the Template folder :  ")
+
+```
+For example :
+
+```
+  Enter BOA services URL : http://xxx.xx.xx:xx
+  Enter your USER ID to run the BOA experiment : abc@abc.com
+  Enter password to run the BOA experiment : xyz
+  Enter Directory that holds the Template folder :  /root/interfaceFolder/cylinder
 
 ```
 
@@ -125,7 +135,9 @@ topic describes the parameters used for configuration.
          behaviors.
        - It is typically advised to use one of the following acquisition functions: 
          expected_improvement, adaptive_expected_improvement, probablity_improvement, 
-         or adaptive_probability_improvement    
+         or adaptive_probability_improvement
+       - BOA optimizer also supports, epsilon_greedy, maximum_entropy and random_sampler sampler
+         types but only when design variables domain is defined as Grid(Discrete variables).
      + epsilon
         - This variable controls the degree to which the optimizer will tend to 
           exploit known 'good' areas of the domain (low epsilon), or favor exploring
@@ -213,6 +225,10 @@ topic describes the parameters used for configuration.
 
 **objective_function**
 ---
+An objective function is the output that you want to maximize or minimize. It is
+what we will measure designs against to decide which option is best. The objective function can be
+thought of as the goal of your generative design process.
+
 BOA uses this function to perform 4 differnet process to prepare the data , populate with respective values , 
 run simulations and prepare the output variable and return the optimized value.
 
@@ -226,40 +242,51 @@ run simulations and prepare the output variable and return the optimized value.
 + postprocess :     feteches the output from the output file and store in a variable
  
 ```
-def objective_func(x):
 
 def objective_func(x):
-    """CFD flow optimisation"""
+    """CFD flow optimisation
+    This function takes in a vector feeded by the BOA for an epoch
+    It has 4 sub process inside it and returns a float Y value/result of the simulation for that epoch
+    PARAMS : x is a vector of 5 values
+    x1 - FVEL Flow Velocity
+    x2 - PRESS Pressure
+    x3 - TKE Turbulent Kinetic energy
+    x4 - TEPS Turbulent Epsilon
+    x5 - U wall Velocity
 
-    args=[str(el) for el in x]
+    Takes in these 5 parameters and perform Preprocessing , set boundary consitons ,
+    simulation process for the epoch and then postprocess the result for the epoch
+    and return the result.
+    """
 
     # Create simulation skeleton
+    args=[str(el) for el in x]
     cmd=args
-    cmd.insert(0, baseDir+"/preprocess")
+    args.insert(0, baseDir+"/preprocess")
     subprocess.call(cmd, cwd=baseDir)
 
-    # Deform the car geometry based on this function's arguments x
+    # Deform the car geometry based on this function's arguments
+    args=[str(el) for el in x]
     cmd=args
-    cmd.insert(0, baseDir+"/setBCs")
-    cmd.pop(1)
+    args.insert(0, baseDir+"/setBCs")
     subprocess.call(cmd, cwd=baseDir)
 
     # Run an OpenFOAM simulation to compute the flow around the car
+    args=[str(el) for el in x]
     cmd=args
-    cmd.insert(0, baseDir+"/simCFD")
-    cmd.pop(1)
+    args.insert(0, baseDir+"/simCFD")
     subprocess.call(cmd, cwd=baseDir)
 
     # Collect the drag integral and pass it to this function
+    args=[str(el) for el in x]
     cmd=args
-    cmd.insert(0, baseDir+"/postprocess")
-    cmd.pop(1)
+    args.insert(0, baseDir+"/postprocess")
     stdout = subprocess.check_output(cmd, cwd=baseDir).decode('utf-8').strip()
 
-    print("Epoch ran at : " + str(datetime.datetime.now()) + " with following Control Variables : " + str(args))
+    print("Epoch ran at : " + str(datetime.datetime.now()) + " with following Deformation parameters : " + str(args))
     print("Epoch result = " + str(stdout))
 
     return float(stdout)
 
-
 ```
+
