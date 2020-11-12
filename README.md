@@ -9,7 +9,8 @@
 ---
 
 ```
-This example implements a possible instrumentation of a basic CFD simulation, run with OpenFOAM, with BOA.
+This example implements a possible instrumentation of a basic CFD simulation, run with OpenFOAM, 
+with IBM Bayesian Optimization Accelerator .
 
 The simulation models the flow around a cylinder, where the control variables are the flow's inlet velocity,
 initial pressure, turbulent kinetic energy, dissipation rate, and wall velocity. The objective is to minimize
@@ -23,18 +24,18 @@ the turbulent kinetic energy at a point in the cylinder's wake (coordinates x=2,
 
 
 ```
-  boaServiceURL = input("Enter BOA services URL : ")
-  userId = input("Enter your USER ID to run the BOA experiment : ")
-  password = input("Enter password to run the BOA experiment : ")
+  boaServiceURL = input("Enter IBM Bayesian Optimization Accelerator services URL : ")
+  userId = input("Enter User ID for white listed BOA user : ")
+  password = input("Enter User password to run the BOA experiment : ")
   baseDir = input("Enter Directory that holds the Template folder :  ")
 
 ```
 
 While running this Interface_function , It ask for user to input 4 values . Those values are :
 
-1. BOA service URL .
-2. UserId of the User trying to run the experiment
-3. password of the account from which the experiment is going to be executed
+1. IBM Bayesian Optimization Accelerator service URL .
+2. User ID for white listed BOA user trying to run the experiment
+3. User password of the account from which the experiment is going to be executed
 4. Directory that holds the template folder
 
 
