@@ -229,19 +229,26 @@ thought of as the goal of your generative design process.
 
 def objective_func(x):
     """CFD flow optimisation
-    This function takes in a vector feeded by the BOA for an epoch
-    It has 4 sub process inside it and returns a float Y value/result of the simulation for that epoch
+    This is objective function for the optimization. This will be called and executed
+    in the Openfoam environment on client side. This function is used to calculate
+    the value of Kinetic energy after getting values of various design variables from
+    IBM Bayesian Optimization Accelerator server.
+    It has 4 sub process inside it and returns a float kinetic energy(Y) value/result
+    of the simulation for that epoch using the 5 design variables(X - x1, x2, x3, x4, x5).
+    Takes in these 5 parameters and perform Preprocessing , set boundary consitons ,
+    simulation process for the epoch and then postprocess the result for the epoch
+    and return the result.
+
     PARAMS : x is a vector of 5 values
     x1 - FVEL Flow Velocity
     x2 - PRESS Pressure
     x3 - TKE Turbulent Kinetic energy
     x4 - TEPS Turbulent Epsilon
     x5 - U wall Velocity
+    returns kinetic energy(Y) at a specific point (2,0,0)
 
-    Takes in these 5 parameters and perform Preprocessing , set boundary consitons ,
-    simulation process for the epoch and then postprocess the result for the epoch
-    and return the result.
     """
+
 
     # Create simulation skeleton
     args=[str(el) for el in x]
